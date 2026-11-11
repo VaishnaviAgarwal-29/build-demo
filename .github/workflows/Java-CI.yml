@@ -6,6 +6,10 @@ on:
   pull_request:
      branches: [main]
 
+permissions:
+   contents: read
+   packages: write
+
 jobs:
   build:
      runs-on: ubuntu-latest
@@ -21,6 +25,7 @@ jobs:
              distribution: temurin
              java-version: '17'
              cache: maven
+             server-id: github
 
         - name: Build and test
           run: mvn clean verify
@@ -34,6 +39,11 @@ jobs:
            -Dsonar.organization=vaishnaviagarwal-29
            -Dsonar.host.url=https://sonarcloud.io
            -Dsonar.qualitygate.wait=true
+
+        - name: Publish to GitHub Packages
+          run: mvn deploy -DskipTests-Djacoco.skip=true
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB.TOKEN }}
 
         - name: Upload WAR artifact
           uses: actions/upload-artifact@v4
