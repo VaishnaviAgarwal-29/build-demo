@@ -43,6 +43,7 @@ jobs:
         - name: Publish to GitHub Packages
           run: mvn deploy -DskipTests-Djacoco.skip=true
           env:
+            GITHUB_ACTOR: ${{ github.actor }}
             GITHUB_TOKEN: ${{ secrets.GITHUB.TOKEN }}
 
         - name: Upload WAR artifact
