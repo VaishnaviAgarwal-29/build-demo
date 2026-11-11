@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +22,6 @@ jobs:
           distribution: temurin
           java-version: '8'
 
-      
       - name: Run tests
         run: mvn -B test
 
@@ -30,3 +33,15 @@ jobs:
         with:
           name: app-war
           path: target/*.war
+
+      - name: Log in to GitHub registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ghcr.io/vaishnaviagarwal-29/build-demo:latest .
+          docker push ghcr.io/vaishnaviagarwal-29/build-demo:latest
