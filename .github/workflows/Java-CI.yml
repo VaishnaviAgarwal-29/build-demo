@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Pipeline Status Email
-        uses: dawidd6/action-send-mail@c8466b02581267885b341f531c3bf7f1e31f0b0d
+        uses: dawidd6/action-send-mail@v3.8.0
         with:
           server_address: smtp.gmail.com
           server_port: 465
