@@ -72,7 +72,7 @@ jobs:
 
       - name: Install Tomcat
         run: |
-          curl -sSfL --proto '=https' https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz | tar xz
+          curl -sL https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz | tar xz
 
       - name: Deploy WAR to Tomcat
         run: cp hello-world-war-*.war apache-tomcat-9.0.98/webapps/hello.war
@@ -95,3 +95,30 @@ jobs:
           done
           echo "Health check failed"
           exit 1
+
+  notify:
+    needs: [build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Pipeline Status Email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "${{ needs.deploy.result == 'success' && '✅ SUCCESS' || '❌ FAILED' }}: Pipeline for ${{ github.repository }}"
+          body: |
+            Hi,
+
+            Your Java CI/CD pipeline run has completed.
+
+            - Repository: ${{ github.repository }}
+            - Branch: ${{ github.ref_name }}
+            - Build Status: ${{ needs.build.result }}
+            - Deploy & Health Check Status: ${{ needs.deploy.result }}
+
+            View full logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: vaishnavia473@gmail.com
+          from: GitHub Actions <no-reply@github.com>
