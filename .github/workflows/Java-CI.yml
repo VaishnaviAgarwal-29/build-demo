@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Pipeline Status Email
-        uses: dawidd6/action-send-mail@v3
+        uses: dawidd6/action-send-mail@v3.1.2@sha256:d541097e366304b407425f190e3860bb391307b0c36b856230f2f4c9c869e5d4 # Pinning or using exact hash if required, or update tag/hash below
         with:
           server_address: smtp.gmail.com
           server_port: 465
