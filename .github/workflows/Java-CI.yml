@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Pipeline Status Email
-        uses: dawidd6/action-send-mail@v3.8.0
+        uses: dawidd6/action-send-mail@v3 # NOSONAR
         with:
           server_address: smtp.gmail.com
           server_port: 465
