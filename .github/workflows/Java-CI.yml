@@ -51,3 +51,18 @@ jobs:
           with:
              name: app-war
              path: target/*.war
+                      
+  deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     environment: production
+     steps:
+        - name: Download WAR
+          uses: actions/download-artifact@v4
+          with:
+             name: app-war
+
+         - name: Show downloaded files
+           run: ls -l
+
+          
