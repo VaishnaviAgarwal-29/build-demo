@@ -52,7 +52,7 @@ jobs:
              name: app-war
              path: target/*.war
                       
-deploy:
+ deploy:
     needs: build
     runs-on: ubuntu-latest
     environment: production
