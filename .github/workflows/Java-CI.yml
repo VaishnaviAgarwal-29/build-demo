@@ -11,7 +11,7 @@ permissions:
    packages: write
 
 jobs:
-  build:
+ build:
      runs-on: ubuntu-latest
      steps:
         - name: Checkout code
@@ -52,11 +52,11 @@ jobs:
              name: app-war
              path: target/*.war
                       
-  deploy:
-     needs: build
-     runs-on: ubuntu-latest
-     environment: production
-     steps:
+deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
         - name: Download WAR
           uses: actions/download-artifact@v4
           with:
