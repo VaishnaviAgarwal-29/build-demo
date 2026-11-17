@@ -70,26 +70,21 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Tomcat
-        run: |
-          curl -sSfL --proto '=https' https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz | tar xz
-
-      -       - name: Deploy to WebLogic
+    
+      - name: Deploy to WebLogic
         env:
           WLS_USER: ${{ secrets.WLS_USER }}
           WLS_PASSWORD: ${{ secrets.WLS_PASSWORD }}
-          WLS_ADMIN_URL: ${{ secrets.WLS_ADMIN_URL }}
-          WLS_TARGET: ${{ secrets.WLS_TARGET }}
         run: |
           docker cp target/*.war weblogic:/tmp/hello.war
-          docker exec weblogic bash -c "
-            if ls /u01/oracle/user_projects/domains/*/bin/setDomainEnv.sh 1> /dev/null 2>&1; then
-              source /u01/oracle/user_projects/domains/*/bin/setDomainEnv.sh
-              java weblogic.Deployer -adminurl '$WLS_ADMIN_URL' -username '$WLS_USER' -password '$WLS_PASSWORD' -name hello -source /tmp/hello.war -targets '$WLS_TARGET' -redeploy
-            else
-              java -cp /u01/oracle/wlserver/server/lib/weblogic.jar weblogic.Deployer -adminurl '$WLS_ADMIN_URL' -username '$WLS_USER' -password '$WLS_PASSWORD' -name hello -source /tmp/hello.war -targets '$WLS_TARGET' -redeploy
-            fi
-          "
+          docker exec weblogic java -cp /u01/oracle/wlserver/server/lib/weblogic.jar weblogic.Deployer \
+            -adminurl t3://localhost:7001 \
+            -username "$WLS_USER" \
+            -password "$WLS_PASSWORD" \
+            -name hello \
+            -source /tmp/hello.war \
+            -targets AdminServer \
+            -deploy
          
   
       - name: Health check
