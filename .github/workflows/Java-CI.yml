@@ -85,8 +85,8 @@ jobs:
           -H "X-Requested-By: MyClient" \
           -H "Accept: application/json" \
           -H "Content-Type: multipart/form-data" \
-          -F "model={ name: 'hello', targets: [ 'AdminServer' ] }" \
-          -F "deployment=@${WAR_FILE}" \
+          -F 'model={ "name": "hello", "targets": [ "AdminServer" ] }' \
+          -F 'deployment=@${WAR_FILE}' \
           "http://localhost:7001/management/weblogic/latest/edit/appDeployments"
       
       - name: Health check
