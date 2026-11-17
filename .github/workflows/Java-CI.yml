@@ -70,30 +70,21 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-    
+  
       - name: Deploy to WebLogic
         env:
           WLS_USER: ${{ secrets.WLS_USER }}
           WLS_PASSWORD: ${{ secrets.WLS_PASSWORD }}
         run: |
-          docker cp target/*.war weblogic:/tmp/hello.war
-          docker exec -e WLS_USER="$WLS_USER" -e WLS_PASSWORD="$WLS_PASSWORD" weblogic bash -c '
-            if [ -f "$DOMAIN_HOME/bin/setDomainEnv.sh" ]; then
-              source "$DOMAIN_HOME/bin/setDomainEnv.sh"
-            else
-              source "$ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh"
-            fi
-            java weblogic.Deployer \
-              -adminurl t3://localhost:7001 \
-              -username "$WLS_USER" \
-              -password "$WLS_PASSWORD" \
-              -name hello \
-              -source /tmp/hello.war \
-              -targets AdminServer \
-              -deploy
+          WAR_FILE=$(ls target/*.war | head -n 1)
+          curl -v -u "$WLS_USER:$WLS_PASSWORD" \
+            -H "X-Requested-By: MyClient" \
+            -H "Accept: application/json" \
+            -H "Content-Type: multipart/form-data" \
+            -F "model={ name: 'hello', targets: [ 'AdminServer' ] }" \
+            -F "deployment=@${WAR_FILE}" \
+            "http://localhost:7001/management/weblogic/latest/edit/appDeployments"ame: Deploy to WebLogic
        
-         
-  
       - name: Health check
         run: |
           for i in $(seq 1 12); do
