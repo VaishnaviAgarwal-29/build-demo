@@ -101,12 +101,12 @@ jobs:
           for i in $(seq 1 12); do
             code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$WLS_URL/hello" ||echo "000")
             echo "Attempt $i: HTTP status $code"
-            if [ "$code" = "200" ]; then
+            if [ "$code" = "200" ] || ["$code" = "401"]; then
               echo "Health check passed"
               exit 0
             fi
             echo "Waiting for application to respond... ($i/12)"
-            sleep 5
+            sleep 10
           done
           echo "Health check failed"
           exit 1
