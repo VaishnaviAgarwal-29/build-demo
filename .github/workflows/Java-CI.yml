@@ -77,14 +77,21 @@ jobs:
           WLS_PASSWORD: ${{ secrets.WLS_PASSWORD }}
         run: |
           docker cp target/*.war weblogic:/tmp/hello.war
-          docker exec weblogic java -cp /u01/oracle/wlserver/server/lib/weblogic.jar weblogic.Deployer \
-            -adminurl t3://localhost:7001 \
-            -username "$WLS_USER" \
-            -password "$WLS_PASSWORD" \
-            -name hello \
-            -source /tmp/hello.war \
-            -targets AdminServer \
-            -deploy
+          docker exec -e WLS_USER="$WLS_USER" -e WLS_PASSWORD="$WLS_PASSWORD" weblogic bash -c '
+            if [ -f "$DOMAIN_HOME/bin/setDomainEnv.sh" ]; then
+              source "$DOMAIN_HOME/bin/setDomainEnv.sh"
+            else
+              source "$ORACLE_HOME/wlserver/server/bin/setWLSEnv.sh"
+            fi
+            java weblogic.Deployer \
+              -adminurl t3://localhost:7001 \
+              -username "$WLS_USER" \
+              -password "$WLS_PASSWORD" \
+              -name hello \
+              -source /tmp/hello.war \
+              -targets AdminServer \
+              -deploy
+       
          
   
       - name: Health check
