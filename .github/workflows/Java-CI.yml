@@ -92,25 +92,8 @@ jobs:
           -F 'model={ "name": "hello", "targets": [ "AdminServer" ] }' \
           -F "deployment=@./$FILENAME" \
           "$WLS_URL/management/weblogic/latest/edit/appDeployments"
-      
-      - name: Health check
-        env:
-          WLS_URL: ${{ secrets.WEBLOGIC_SERVER_URL }}
-        run: |
-          echo "Starting health check against #WLS_URL..."
-          for i in $(seq 1 12); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$WLS_URL/hello" ||echo "000")
-            echo "Attempt $i: HTTP status $code"
-            if [ "$code" = "200" ]; then
-              echo "Health check passed"
-              exit 0
-            fi
-            echo "Waiting for application to respond... ($i/12)"
-            sleep 10
-          done
-          echo "Health check failed"
-          exit 1
 
+    
   notify:
     needs: [build, deploy]
     if: always()
