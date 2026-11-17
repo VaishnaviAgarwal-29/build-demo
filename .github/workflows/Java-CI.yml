@@ -94,9 +94,12 @@ jobs:
           "$WLS_URL/management/weblogic/latest/edit/appDeployments"
       
       - name: Health check
+        env:
+          WLS_URL: ${{ secrets.WEBLOGIC_SERVER_URL }}
+    
         run: |
           for i in $(seq 1 12); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/hello/)
+            if curl -f -s -o /dev/null "$WLS_URL/hello"; then
             echo "Attempt $i: HTTP status $code"
             if [ "$code" = "200" ]; then
               echo "Health check passed"
