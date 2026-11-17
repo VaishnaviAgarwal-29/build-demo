@@ -81,12 +81,14 @@ jobs:
            echo "Error: No WAR file found!"
          exit 1
          fi
+         FILENAME=$(basename "$WAR_FILE")
+         
          curl -v -u "$WLS_USER:$WLS_PASSWORD" \
           -H "X-Requested-By: MyClient" \
           -H "Accept: application/json" \
           -H "Content-Type: multipart/form-data" \
           -F 'model={ "name": "hello", "targets": [ "AdminServer" ] }' \
-          -F 'deployment=@${WAR_FILE}' \
+          -F "deployment=@./$FILENAME" \
           "http://localhost:7001/management/weblogic/latest/edit/appDeployments"
       
       - name: Health check
