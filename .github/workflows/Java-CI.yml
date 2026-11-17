@@ -74,6 +74,8 @@ jobs:
         env:
          WLS_USER: ${{ secrets.WLS_USER }}
          WLS_PASSWORD: ${{ secrets.WLS_PASSWORD }}
+         WLS_URL: ${{ secrets.WEBLOGIC_SERVER_URL }}
+
         run: |
          WAR_FILE=$(find . -name "*.war" | head -n 1)
          echo "Found WAR file: $WAR_FILE"
