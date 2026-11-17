@@ -1,4 +1,4 @@
-name: Java CI
+name: Deploy to Tomcat
 
 on:
   push:
@@ -74,13 +74,16 @@ jobs:
         run: |
           curl -sSfL --proto '=https' https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.98/bin/apache-tomcat-9.0.98.tar.gz | tar xz
 
-      - name: Deploy WAR to Tomcat
-        run: cp hello-world-war-*.war apache-tomcat-9.0.98/webapps/hello.war
-
-      - name: Start Tomcat
+      - name: Deploy Weblogic
+        env:
+          WLS_USER: ${{ secrets.WLS_USER }}
+          WLS_PASSWORD: ${{ secrets.WLS_PASSWORD }}
+          WLS_ADMIN_URL: ${{ secrets.WLS_ADMIN_URL }}
+          WLS_TARGET: ${{ secrets.WLS_TARGET }}
+          
         run: |
-          apache-tomcat-9.0.98/bin/startup.sh
-          sleep 20
+          docker cp target/*.war weblogic:/tmp/hello.war
+          docker exec weblogic bash -c "source /u01/oracle/user_projects/domains/base_domain/bin/setDomainEnv.sh && java weblogic.Deloyer -adminurl '$WLS_ADMIN_URL' -username '$WLS_USER' -pasword' $WLS_PASSWORD' -name hello -source /temp/hello.war -targets '$WLS_TARGET' -redeploy"
 
       - name: Health check
         run: |
