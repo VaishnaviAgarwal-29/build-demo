@@ -105,6 +105,7 @@ jobs:
               echo "Health check passed"
               exit 0
             fi
+            echo "Waiting for application to respond... ($i/12)"
             sleep 5
           done
           echo "Health check failed"
